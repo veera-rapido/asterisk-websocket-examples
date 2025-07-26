@@ -38,6 +38,7 @@ class session():
 class ast_ws_server(AstAriWebSocketServer):
     def __init__(self, ari_host, ari_port, ari_credentials, ari_protocol,
                  media_host, media_port, media_credentials, media_protocol,
+                 forward_host=None, forward_port=None,
                  tag=None, log_level=logging.INFO):
 
         super().__init__(ari_host, ari_port, ari_credentials, ari_protocol, tag, log_level)
@@ -47,12 +48,16 @@ class ast_ws_server(AstAriWebSocketServer):
         self.media_port = media_port
         self.media_credentials = media_credentials
         self.media_protocol = media_protocol
+        self.forward_host = forward_host
+        self.forward_port = forward_port
 
         self.mws = AstMediaWebSocketServer(self.media_host,
                       self.media_port, self.media_credentials,
                       self.media_protocol,
                       tag = tag,
-                      log_level=log_level)
+                      log_level=log_level,
+                      forward_host=self.forward_host,
+                      forward_port=self.forward_port)
         asyncio.create_task(self.mws.listen())
 
     async def handle_stasisstart(self, msg):
@@ -135,6 +140,8 @@ async def main(args):
                     args.media_bind_port,
                     media_creds,
                     args.media_websocket_protocol,
+                    forward_host=args.forward_host,
+                    forward_port=args.forward_port,
                     tag="ari_ws_server",
                     log_level=logging.INFO
                     )
@@ -161,6 +168,8 @@ if __name__ == "__main__":
     parser.add_argument("-mwi", "--media-websocket-id", type=str, help="Connection name from websocket_client.conf. Default=media_connection1", required=False, default="media_connection1")
     parser.add_argument("-mU", "--media-user", type=str, help="ARI user to authenticate incoming connections against", required=False)
     parser.add_argument("-mP", "--media-password", type=str, help="Password for Media user", required=False)
+    parser.add_argument("-fh", "--forward-host", type=str, help="Host to forward media data to (enables forwarding mode)", required=False)
+    parser.add_argument("-fp", "--forward-port", type=str, help="Port to forward media data to (enables forwarding mode)", required=False)
     args = parser.parse_args()
     if not args:
         sys.exit(1)
