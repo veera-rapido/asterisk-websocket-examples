@@ -1,0 +1,22 @@
+services:
+  asterisk:
+    # build:
+    #   context: .
+    #   dockerfile: asterisk/Dockerfile
+    image: asterisk-websockets
+    container_name: asterisk
+    restart: always
+    # network_mode: host
+    ports:
+      - 5038:5038
+      - 5060:5060
+      - 8088:8088
+      - 10000-10050:10000-10050/udp
+    volumes:
+      - ./asterisk/config/pjsip.conf:/etc/asterisk/pjsip.conf
+      - ./asterisk/config/extensions.conf:/etc/asterisk/extensions.conf
+      - ./asterisk/config/ari.conf:/etc/asterisk/ari.conf
+      - ./asterisk/config/websocket_client.conf:/etc/asterisk/websocket_client.conf
+      - ./asterisk/config/queues.conf:/etc/asterisk/queues.conf
+      - ./asterisk/config/manager.conf:/etc/asterisk/manager.conf
+      - ./asterisk/config/http.conf:/etc/asterisk/http.conf

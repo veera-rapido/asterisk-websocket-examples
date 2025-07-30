@@ -152,6 +152,7 @@ async def main(args):
         return
 
 if __name__ == "__main__":
+    print(sys.argv)
     description = (
         'Command line utility to test ARI and media websocket client connections'
     )
